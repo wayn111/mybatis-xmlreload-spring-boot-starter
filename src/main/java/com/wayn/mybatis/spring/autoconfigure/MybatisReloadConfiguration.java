@@ -9,10 +9,10 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.boot.autoconfigure.MybatisProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.io.FileSystemResource;
@@ -23,11 +23,15 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * mybatis xml file hot reload configuration.
@@ -36,43 +40,40 @@ import java.util.stream.Collectors;
  * @author wayn
  */
 @Component
-@ConditionalOnProperty(value = "mybatis.xml-reload", matchIfMissing = true)
+@ConditionalOnProperty(value = "mybatis.xml-reload.enabled", matchIfMissing = true)
 public class MybatisReloadConfiguration extends ApplicationObjectSupport implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisReloadConfiguration.class);
-    public static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
+    public static final PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
 
+    public static final String CLASS_PATH_TARGET = File.separator + "target" + File.separator + "classes";
+    public static final String MAVEN_RESOURCES = "/src/main/resources";
+    public static final Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
-    private final MybatisProperties properties;
-
-    public MybatisReloadConfiguration(MybatisProperties properties) {
-        this.properties = properties;
-    }
+    @Value("${mybatis.xml-reload.mapper-locations:}")
+    private String[] xmlReloadMapperLocations;
 
     @Override
     public void afterPropertiesSet() throws IOException {
         Map<String, SqlSessionFactory> beansOfType = getApplicationContext().getBeansOfType(SqlSessionFactory.class);
-        String[] locationPatterns = properties.getMapperLocations();
-        List<Resource> mapperLocations = Arrays.stream(properties.resolveMapperLocations()).collect(Collectors.toList());
+        List<Resource> mapperLocationsTmp = Stream.of(Optional.of(xmlReloadMapperLocations).orElse(new String[0]))
+                .flatMap(location -> Stream.of(getResources(location))).collect(Collectors.toList());
 
-        List<Path> rootPaths = new ArrayList<>();
-        for (String locationPattern : locationPatterns) {
-            String[] split = locationPattern.split("/");
-            String rootDir = split[0];
-            Path rootPath = Path.of(pathMatchingResourcePatternResolver.getResources(rootDir)[0].getFile().getAbsolutePath());
-            if (rootDir.contains(":")) {
-                String compilerDir = rootDir.split(":", 2)[1];
-                File mapperDir = new File("src/main/resources/" + compilerDir);
-                if (mapperDir.exists()) {
-                    rootPath = Path.of(mapperDir.getAbsolutePath());
-                    File[] files = mapperDir.listFiles();
-                    mapperLocations.addAll(Arrays.stream(files != null ? files : new File[0]).map(FileSystemResource::new).toList());
-                }
+        List<Resource> mapperLocations = new ArrayList<>(mapperLocationsTmp.size() * 2);
+        Set<Path> locationPatternSet = new HashSet<>();
+        for (Resource mapperLocation : mapperLocationsTmp) {
+            mapperLocations.add(mapperLocation);
+            String absolutePath = mapperLocation.getFile().getAbsolutePath();
+            File tmpFile = new File(absolutePath.replace(CLASS_PATH_TARGET, MAVEN_RESOURCES));
+            if (tmpFile.exists()) {
+                locationPatternSet.add(Path.of(tmpFile.getParent()));
+                FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
+                mapperLocations.add(fileSystemResource);
             }
-            rootPaths.add(rootPath);
         }
 
-
+        List<Path> rootPaths = new ArrayList<>();
+        rootPaths.addAll(locationPatternSet);
         DirectoryWatcher watcher = DirectoryWatcher.builder()
                 .paths(rootPaths) // or use paths(directoriesToWatch)
                 .listener(event -> {
@@ -86,13 +87,16 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                             for (SqlSessionFactory sqlSessionFactory : beansOfType.values()) {
                                 try {
                                     Configuration targetConfiguration = sqlSessionFactory.getConfiguration();
-                                    Class<? extends Configuration> aClass = targetConfiguration.getClass();
+                                    Class<?> tClass = targetConfiguration.getClass(), aClass = targetConfiguration.getClass();
+                                    if (targetConfiguration.getClass().getSimpleName().equals("MybatisConfiguration")) {
+                                        aClass = Configuration.class;
+                                    }
                                     Set<String> loadedResources = (Set<String>) getFieldValue(targetConfiguration, aClass, "loadedResources");
                                     loadedResources.clear();
 
-                                    Map<String, ResultMap> resultMaps = (Map<String, ResultMap>) getFieldValue(targetConfiguration, aClass, "resultMaps");
-                                    Map<String, XNode> sqlFragmentsMaps = (Map<String, XNode>) getFieldValue(targetConfiguration, aClass, "sqlFragments");
-                                    Map<String, MappedStatement> mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, aClass, "mappedStatements");
+                                    Map<String, ResultMap> resultMaps = (Map<String, ResultMap>) getFieldValue(targetConfiguration, tClass, "resultMaps");
+                                    Map<String, XNode> sqlFragmentsMaps = (Map<String, XNode>) getFieldValue(targetConfiguration, tClass, "sqlFragments");
+                                    Map<String, MappedStatement> mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, tClass, "mappedStatements");
 
                                     for (Resource mapperLocation : mapperLocations) {
                                         if (!absolutePath.equals(mapperLocation.getFile().getAbsolutePath())) {
@@ -128,7 +132,7 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                                         LOGGER.info("Parsed mapper file: '" + mapperLocation + "'");
                                     }
                                 } catch (Exception e) {
-                                    throw new RuntimeException(e);
+                                    LOGGER.error(e.getMessage(), e);
                                 }
                             }
                             break;
@@ -149,10 +153,18 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
         watcher.watchAsync(new ScheduledThreadPoolExecutor(1, threadFactory));
     }
 
+    private Resource[] getResources(String location) {
+        try {
+            return patternResolver.getResources(location);
+        } catch (IOException e) {
+            return new Resource[0];
+        }
+    }
+
     /**
      * Use reflection to get the field value.
      */
-    private static Object getFieldValue(Configuration targetConfiguration, Class<? extends Configuration> aClass,
+    private static Object getFieldValue(Configuration targetConfiguration, Class<?> aClass,
                                         String filed) throws NoSuchFieldException, IllegalAccessException {
         Field resultMapsField = aClass.getDeclaredField(filed);
         resultMapsField.setAccessible(true);
