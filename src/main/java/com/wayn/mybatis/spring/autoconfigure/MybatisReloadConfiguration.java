@@ -10,6 +10,7 @@ import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.boot.autoconfigure.MybatisProperties;
+import org.mybatis.spring.boot.autoconfigure.MybatisReloadConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -29,9 +30,15 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
+/**
+ * mybatis xml file hot reload configuration.
+ * if <b>mybatis.xml-reload</b> is true, will enable this configuration.
+ *
+ * @author wayn
+ */
 @Component
 @ConditionalOnProperty(value = "mybatis.xml-reload", matchIfMissing = true)
-public class MybatisReloadConfig extends ApplicationObjectSupport implements InitializingBean {
+public class MybatisReloadConfiguration extends ApplicationObjectSupport implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MybatisReloadConfig.class);
     public static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
@@ -39,7 +46,7 @@ public class MybatisReloadConfig extends ApplicationObjectSupport implements Ini
 
     private final MybatisProperties properties;
 
-    public MybatisReloadConfig(MybatisProperties properties) {
+    public MybatisReloadConfiguration(MybatisProperties properties) {
         this.properties = properties;
     }
 

@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "defaultValue": true,
+      "name": "mybatis.xml-reload",
+      "description": "if <b>mybatis.xml-reload</b> is true, will enable xml hot reload configuration.",
+      "type": "java.lang.Boolean"
+    }
+  ]
+}
