@@ -10,7 +10,6 @@ import org.apache.ibatis.parsing.XPathParser;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.boot.autoconfigure.MybatisProperties;
-import org.mybatis.spring.boot.autoconfigure.MybatisReloadConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 @ConditionalOnProperty(value = "mybatis.xml-reload", matchIfMissing = true)
 public class MybatisReloadConfiguration extends ApplicationObjectSupport implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisReloadConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisReloadConfiguration.class);
     public static final PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
 
 
