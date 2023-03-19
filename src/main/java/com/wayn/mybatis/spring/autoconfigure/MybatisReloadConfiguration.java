@@ -60,7 +60,7 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
             String[] split = locationPattern.split("/");
             String rootDir = split[0];
             Path rootPath = Path.of(pathMatchingResourcePatternResolver.getResources(rootDir)[0].getFile().getAbsolutePath());
-            if (!rootDir.contains("classpath:")) {
+            if (rootDir.contains(":")) {
                 String compilerDir = rootDir.split(":", 2)[1];
                 File mapperDir = new File("src/main/resources/" + compilerDir);
                 if (mapperDir.exists()) {
