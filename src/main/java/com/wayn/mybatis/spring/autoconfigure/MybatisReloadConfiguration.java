@@ -82,7 +82,7 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                         case MODIFY: /* file modified */
                             Path modifyPath = event.path();
                             String absolutePath = modifyPath.toFile().getAbsolutePath();
-                            LOGGER.debug("mybatis xml file has changed:" + modifyPath);
+                            LOGGER.info("mybatis xml file has changed:" + modifyPath);
                             for (SqlSessionFactory sqlSessionFactory : beansOfType.values()) {
                                 try {
                                     Configuration targetConfiguration = sqlSessionFactory.getConfiguration();
@@ -125,7 +125,7 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                                         } catch (Exception e) {
                                             LOGGER.error(e.getMessage(), e);
                                         }
-                                        LOGGER.debug("Parsed mapper file: '" + mapperLocation + "'");
+                                        LOGGER.info("Parsed mapper file: '" + mapperLocation + "'");
                                     }
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
