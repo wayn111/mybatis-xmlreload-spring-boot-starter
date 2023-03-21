@@ -5,7 +5,7 @@
     <packaging>jar</packaging>
     <groupId>com.wayn</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>1.1.0</version>
+    <version>3.0.1</version>
     <name>mybatis-xmlreload-spring-boot-starter</name>
     <description>mybais springboot项目中xml文件热加载支持</description>
 
