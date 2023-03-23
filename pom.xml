@@ -5,7 +5,7 @@
     <packaging>jar</packaging>
     <groupId>io.github.wayn111</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.3-SNAPSHOT</version>
     <name>mybatis-xmlreload-spring-boot-starter</name>
     <url>https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter</url>
     <description>mybais springboot项目中xml文件热加载支持</description>
@@ -156,16 +156,16 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>--add-opens java.base/java.util=ALL-UNNAMED
-                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-                        --add-opens java.base/java.text=ALL-UNNAMED
-                        --add-opens java.desktop/java.awt.font=ALL-UNNAMED</argLine>
+                    <argLine>&#45;&#45;add-opens java.base/java.util=ALL-UNNAMED
+                        &#45;&#45;add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        &#45;&#45;add-opens java.base/java.text=ALL-UNNAMED
+                        &#45;&#45;add-opens java.desktop/java.awt.font=ALL-UNNAMED</argLine>
                 </configuration>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
