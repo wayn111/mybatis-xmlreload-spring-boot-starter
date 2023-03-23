@@ -3,8 +3,8 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 
 | 分支名称                                                                                              | Spring Boot版本 |
 |---------------------------------------------------------------------------------------------------|---------------|
-| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                          | 2.7.8         |
-| [Spring Boot2](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter/tree/springboot2) | Spring Boot2  
+| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                          | 3.0.4         |
+| [Spring Boot2](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter/tree/springboot2) | 2.2.7.RELEASE 
 
 # 项目特点
 - 修改项目加载的xml文件的为自己项目resources目录下的xml文件，而不是项目编译后的target目录下的xml文件，这样做的好处是自己resources目录的xml文件修改后可以立即生效，而不用等待项目编译
@@ -16,7 +16,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 <dependency>
     <groupId>com.wayn</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
