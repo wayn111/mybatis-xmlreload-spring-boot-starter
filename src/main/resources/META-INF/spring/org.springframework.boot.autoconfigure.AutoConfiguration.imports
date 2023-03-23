@@ -1,1 +1,1 @@
-com.wayn.mybatis.spring.autoconfigure.MybatisReloadConfiguration
+io.github.wayn111.mybatis.xmlreload.autoconfiguration.MybatisXmlReloadConfiguration

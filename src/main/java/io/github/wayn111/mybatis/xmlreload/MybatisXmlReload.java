@@ -1,5 +1,6 @@
-package com.wayn.mybatis.spring.autoconfigure;
+package io.github.wayn111.mybatis.xmlreload;
 
+import io.github.wayn111.mybatis.xmlreload.autoconfiguration.MybatisXmlReloadProperties;
 import io.methvin.watcher.DirectoryWatcher;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
@@ -11,53 +12,44 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * mybatis xml file hot reload configuration.
- * if <b>mybatis.xml-reload</b> is true, will enable this configuration.
- *
- * @author wayn
+ * mybatis-xml-reload 核心xml热加载
  */
-@Component
-@ConditionalOnProperty(value = "mybatis.xml-reload.enabled", matchIfMissing = true)
-public class MybatisReloadConfiguration extends ApplicationObjectSupport implements InitializingBean {
+public class MybatisXmlReload {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MybatisReloadConfiguration.class);
-    public static final PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+    private static final Logger logger = LoggerFactory.getLogger(MybatisXmlReload.class);
 
-    public static final String CLASS_PATH_TARGET = File.separator + "target" + File.separator + "classes";
-    public static final String MAVEN_RESOURCES = "/src/main/resources";
-    public static final Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
-    @Value("${mybatis.xml-reload.mapper-locations:}")
-    private String[] xmlReloadMapperLocations;
+    private MybatisXmlReloadProperties prop;
+    private List<SqlSessionFactory> sqlSessionFactories;
 
-    @Override
-    public void afterPropertiesSet() throws IOException {
-        Map<String, SqlSessionFactory> beansOfType = getApplicationContext().getBeansOfType(SqlSessionFactory.class);
-        List<Resource> mapperLocationsTmp = Stream.of(Optional.of(xmlReloadMapperLocations).orElse(new String[0]))
-                .flatMap(location -> Stream.of(getResources(location))).collect(Collectors.toList());
+    public MybatisXmlReload(MybatisXmlReloadProperties prop, List<SqlSessionFactory> sqlSessionFactories) {
+        this.prop = prop;
+        this.sqlSessionFactories = sqlSessionFactories;
+    }
+
+    public void xmlReload() throws IOException {
+        PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
+        String CLASS_PATH_TARGET = File.separator + "target" + File.separator + "classes";
+        String MAVEN_RESOURCES = "/src/main/resources";
+        Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
+
+        List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
+                .flatMap(location -> Stream.of(getResources(patternResolver, location))).toList();
 
         List<Resource> mapperLocations = new ArrayList<>(mapperLocationsTmp.size() * 2);
         Set<Path> locationPatternSet = new HashSet<>();
@@ -83,8 +75,8 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                         case MODIFY: /* file modified */
                             Path modifyPath = event.path();
                             String absolutePath = modifyPath.toFile().getAbsolutePath();
-                            LOGGER.info("mybatis xml file has changed:" + modifyPath);
-                            for (SqlSessionFactory sqlSessionFactory : beansOfType.values()) {
+                            logger.info("mybatis xml file has changed:" + modifyPath);
+                            for (SqlSessionFactory sqlSessionFactory : sqlSessionFactories) {
                                 try {
                                     Configuration targetConfiguration = sqlSessionFactory.getConfiguration();
                                     Class<?> tClass = targetConfiguration.getClass(), aClass = targetConfiguration.getClass();
@@ -127,12 +119,12 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
                                                     targetConfiguration, mapperLocation.toString(), targetConfiguration.getSqlFragments());
                                             xmlMapperBuilder.parse();
                                         } catch (Exception e) {
-                                            LOGGER.error(e.getMessage(), e);
+                                            logger.error(e.getMessage(), e);
                                         }
-                                        LOGGER.info("Parsed mapper file: '" + mapperLocation + "'");
+                                        logger.info("Parsed mapper file: '" + mapperLocation + "'");
                                     }
                                 } catch (Exception e) {
-                                    LOGGER.error(e.getMessage(), e);
+                                    logger.error(e.getMessage(), e);
                                 }
                             }
                             break;
@@ -151,9 +143,16 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
             return thread;
         };
         watcher.watchAsync(new ScheduledThreadPoolExecutor(1, threadFactory));
+
     }
 
-    private Resource[] getResources(String location) {
+    /**
+     * getResources
+     *
+     * @param location 文件位置
+     * @return Resource[]
+     */
+    private Resource[] getResources(PathMatchingResourcePatternResolver patternResolver, String location) {
         try {
             return patternResolver.getResources(location);
         } catch (IOException e) {
@@ -163,6 +162,13 @@ public class MybatisReloadConfiguration extends ApplicationObjectSupport impleme
 
     /**
      * Use reflection to get the field value.
+     *
+     * @param targetConfiguration
+     * @param aClass
+     * @param filed
+     * @return
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
      */
     private static Object getFieldValue(Configuration targetConfiguration, Class<?> aClass,
                                         String filed) throws NoSuchFieldException, IllegalAccessException {

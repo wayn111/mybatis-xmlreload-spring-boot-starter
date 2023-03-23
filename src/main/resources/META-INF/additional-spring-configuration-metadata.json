@@ -2,13 +2,13 @@
   "properties": [
     {
       "defaultValue": true,
-      "name": "mybatis.xml-reload.enabled",
+      "name": "mybatis-xml-reload.enabled",
       "description": "if <b>mybatis.xml-reload.enabled</b> is true, will enable xml hot reload configuration.",
       "type": "java.lang.Boolean"
     },
     {
       "defaultValue": "",
-      "name": "mybatis.xml-reload.mapper-locations",
+      "name": "mybatis-xml-reload.mapper-locations",
       "description": "xml reload mapper locations, eg: classpath:mapper/*Mapper.xml, classpath:other/*Mapper.xml",
       "type": "java.lang.String"
     }
