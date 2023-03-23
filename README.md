@@ -16,7 +16,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 <dependency>
     <groupId>com.wayn</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.3.m1</version>
 </dependency>
 ```
 
