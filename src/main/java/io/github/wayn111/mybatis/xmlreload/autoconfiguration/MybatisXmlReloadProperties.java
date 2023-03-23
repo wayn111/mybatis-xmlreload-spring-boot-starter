@@ -7,15 +7,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "mybatis-xml-reload")
 public class MybatisXmlReloadProperties {
-    private Boolean enabled;
+    private boolean enabled;
 
     private String[] mapperLocations;
 
-    public Boolean getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
