@@ -46,7 +46,7 @@ public class MybatisXmlReload {
         PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
         String CLASS_PATH_TARGET = File.separator + "target" + File.separator + "classes";
         String MAVEN_RESOURCES = "/src/main/resources";
-        Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
+        // Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
         List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
                 .flatMap(location -> Stream.of(getResources(patternResolver, location))).toList();
