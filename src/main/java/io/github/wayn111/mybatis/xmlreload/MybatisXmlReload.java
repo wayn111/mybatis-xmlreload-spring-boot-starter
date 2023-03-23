@@ -20,10 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -49,7 +50,7 @@ public class MybatisXmlReload {
         // Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
         List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
-                .flatMap(location -> Stream.of(getResources(patternResolver, location))).toList();
+                .flatMap(location -> Stream.of(getResources(patternResolver, location))).collect(Collectors.toList());
 
         List<Resource> mapperLocations = new ArrayList<>(mapperLocationsTmp.size() * 2);
         Set<Path> locationPatternSet = new HashSet<>();
@@ -58,7 +59,7 @@ public class MybatisXmlReload {
             String absolutePath = mapperLocation.getFile().getAbsolutePath();
             File tmpFile = new File(absolutePath.replace(CLASS_PATH_TARGET, MAVEN_RESOURCES));
             if (tmpFile.exists()) {
-                locationPatternSet.add(Path.of(tmpFile.getParent()));
+                locationPatternSet.add(Paths.get(tmpFile.getParent()));
                 FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
                 mapperLocations.add(fileSystemResource);
             }
