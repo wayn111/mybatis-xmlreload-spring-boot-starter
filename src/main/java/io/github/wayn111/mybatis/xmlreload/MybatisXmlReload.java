@@ -65,8 +65,7 @@ public class MybatisXmlReload {
             }
         }
 
-        List<Path> rootPaths = new ArrayList<>();
-        rootPaths.addAll(locationPatternSet);
+        List<Path> rootPaths = new ArrayList<>(locationPatternSet);
         DirectoryWatcher watcher = DirectoryWatcher.builder()
                 .paths(rootPaths) // or use paths(directoriesToWatch)
                 .listener(event -> {
