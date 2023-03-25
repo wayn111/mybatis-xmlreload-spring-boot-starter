@@ -21,7 +21,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 ```
 
 # 使用
-通过 maven 公共仓库或者下载本项目源码，在项目pom文件中写入本项目坐标，默认自动启用 xml 热更新功能，想要关闭的话通过设置 `mybatis.xml-reload.enabled`
+通过 maven 公共仓库或者下载本项目源码，在项目pom文件中写入本项目坐标，默认自动启用 xml 热更新功能，想要关闭的话通过设置 `mybatis-xml-reload.enabled`
 为 false。配置列表
 ```yml
 mybatis-xml-reload:
