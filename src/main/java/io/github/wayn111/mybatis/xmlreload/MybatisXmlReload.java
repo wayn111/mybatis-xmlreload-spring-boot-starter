@@ -23,11 +23,10 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * mybatis-xml-reload 核心xml热加载
+ * mybatis-xml-reload 核心xml热加载逻辑
  */
 public class MybatisXmlReload {
 
@@ -147,7 +146,7 @@ public class MybatisXmlReload {
     }
 
     /**
-     * getResources
+     * 根据xml路径获取对应实际文件
      *
      * @param location 文件位置
      * @return Resource[]
@@ -161,7 +160,7 @@ public class MybatisXmlReload {
     }
 
     /**
-     * Use reflection to get the field value.
+     * 根据反射获取Configuration对象中属性
      *
      * @param targetConfiguration
      * @param aClass
