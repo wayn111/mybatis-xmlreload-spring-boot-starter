@@ -48,4 +48,5 @@ mybatis-xml-reload:
 > 如果有任何问题，欢迎提交Issue或加我微信告知，方便互相交流反馈～ 💘。最后，喜欢的话麻烦给我个star
 
 关注公众号：waynblog，回复"学习"进群交流。
-![](images/wx-mp-code.png)
+
+<img src="images/wx-mp-code.png" width = "100" />
