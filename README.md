@@ -1,4 +1,4 @@
-****# mybatis-xmlreload-spring-boot-starter
+# mybatis-xmlreload-spring-boot-starter
 mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 
 | 分支名称                                                                                             | Spring Boot版本 |
