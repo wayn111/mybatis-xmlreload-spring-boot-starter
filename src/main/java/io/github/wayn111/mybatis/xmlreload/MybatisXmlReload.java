@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Stream;
 
 /**
- * mybatis-xml-reload 核心xml热加载逻辑
+ * mybatis-xml-reload核心xml热加载逻辑
  */
 public class MybatisXmlReload {
 
@@ -43,8 +43,9 @@ public class MybatisXmlReload {
 
     public void xmlReload() throws IOException {
         PathMatchingResourcePatternResolver patternResolver = new PathMatchingResourcePatternResolver();
-        String CLASS_PATH_TARGET = File.separator + "target" + File.separator + "classes";
-        String MAVEN_RESOURCES = "/src/main/resources";
+        String class_path_target_dir = File.separator + "target" + File.separator + "classes";
+        String maven_resources_dir = "/src/main/resources";
+        String maven_java_dir = "/src/main/java";
         // Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
         List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
@@ -54,12 +55,24 @@ public class MybatisXmlReload {
         Set<Path> locationPatternSet = new HashSet<>();
         for (Resource mapperLocation : mapperLocationsTmp) {
             mapperLocations.add(mapperLocation);
-            String absolutePath = mapperLocation.getFile().getAbsolutePath();
-            File tmpFile = new File(absolutePath.replace(CLASS_PATH_TARGET, MAVEN_RESOURCES));
-            if (tmpFile.exists()) {
-                locationPatternSet.add(Path.of(tmpFile.getParent()));
-                FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
-                mapperLocations.add(fileSystemResource);
+            // 判断xml文件存放位置，只读取文件类型的xml文件，jar里的xml文件不做读取
+            if (mapperLocation.isFile()) {
+                mapperLocation.getFile();
+                String absolutePath = mapperLocation.getFile().getAbsolutePath();
+                // 先从maven_resources_dir目录下找xml文件目录，不存在就去maven_java_dir下找xml文件目录，都找不到就只能取target目录下xml文件目录
+                File tmpFile = new File(absolutePath.replace(class_path_target_dir, maven_resources_dir));
+                if (!tmpFile.exists()) {
+                    tmpFile = new File(absolutePath.replace(class_path_target_dir, maven_java_dir));
+                }
+                if (tmpFile.exists()) {
+                    locationPatternSet.add(Path.of(tmpFile.getParent()));
+                    FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
+                    mapperLocations.add(fileSystemResource);
+                } else {
+                    locationPatternSet.add(Path.of(mapperLocation.getFile().getParent()));
+                }
+
+
             }
         }
 
@@ -74,7 +87,10 @@ public class MybatisXmlReload {
                         case MODIFY: /* file modified */
                             Path modifyPath = event.path();
                             String absolutePath = modifyPath.toFile().getAbsolutePath();
-                            logger.info("mybatis xml file has changed:" + modifyPath);
+                            if (!new File(absolutePath).exists()) {
+                                break;
+                            }
+                            logger.info("mybatis xml file has changed: '{}'", absolutePath);
                             for (SqlSessionFactory sqlSessionFactory : sqlSessionFactories) {
                                 try {
                                     Configuration targetConfiguration = sqlSessionFactory.getConfiguration();
@@ -90,6 +106,9 @@ public class MybatisXmlReload {
                                     Map<String, MappedStatement> mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, tClass, "mappedStatements");
 
                                     for (Resource mapperLocation : mapperLocations) {
+                                        if (!mapperLocation.isFile()) {
+                                            continue;
+                                        }
                                         if (!absolutePath.equals(mapperLocation.getFile().getAbsolutePath())) {
                                             continue;
                                         }
@@ -120,7 +139,7 @@ public class MybatisXmlReload {
                                         } catch (Exception e) {
                                             logger.error(e.getMessage(), e);
                                         }
-                                        logger.info("Parsed mapper file: '" + mapperLocation + "'");
+                                        logger.info("mapperLocation reload success: '{}'", mapperLocation);
                                     }
                                 } catch (Exception e) {
                                     logger.error(e.getMessage(), e);

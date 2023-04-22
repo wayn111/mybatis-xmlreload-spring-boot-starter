@@ -3,7 +3,7 @@ package io.github.wayn111.mybatis.xmlreload.autoconfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * mybatis-xml-reload配置类
+ * mybatis-xml-reload配置属性类
  */
 @ConfigurationProperties(prefix = "mybatis-xml-reload")
 public class MybatisXmlReloadProperties {
