@@ -73,8 +73,6 @@ public class MybatisXmlReload {
                 } else {
                     locationPatternSet.add(Paths.get(mapperLocation.getFile().getParent()));
                 }
-
-
             }
         }
 
