@@ -20,9 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -49,7 +51,7 @@ public class MybatisXmlReload {
         // Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
         List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
-                .flatMap(location -> Stream.of(getResources(patternResolver, location))).toList();
+                .flatMap(location -> Stream.of(getResources(patternResolver, location))).collect(Collectors.toList());
 
         List<Resource> mapperLocations = new ArrayList<>(mapperLocationsTmp.size() * 2);
         Set<Path> locationPatternSet = new HashSet<>();
@@ -65,19 +67,16 @@ public class MybatisXmlReload {
                     tmpFile = new File(absolutePath.replace(class_path_target_dir, maven_java_dir));
                 }
                 if (tmpFile.exists()) {
-                    locationPatternSet.add(Path.of(tmpFile.getParent()));
+                    locationPatternSet.add(Paths.get(tmpFile.getParent()));
                     FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
                     mapperLocations.add(fileSystemResource);
                 } else {
-                    locationPatternSet.add(Path.of(mapperLocation.getFile().getParent()));
+                    locationPatternSet.add(Paths.get(mapperLocation.getFile().getParent()));
                 }
-
-
             }
         }
 
-        List<Path> rootPaths = new ArrayList<>();
-        rootPaths.addAll(locationPatternSet);
+        List<Path> rootPaths = new ArrayList<>(locationPatternSet);
         DirectoryWatcher watcher = DirectoryWatcher.builder()
                 .paths(rootPaths) // or use paths(directoriesToWatch)
                 .listener(event -> {
