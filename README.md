@@ -1,8 +1,6 @@
 # mybatis-xmlreload-spring-boot-starter
 mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。
 
-**2.0 版本在未来准备废弃，不在维护**。
-
 | 分支名称                                                                                             | Spring Boot版本 |
 |--------------------------------------------------------------------------------------------------|---------------|
 | [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                         | 3.0.4         |
