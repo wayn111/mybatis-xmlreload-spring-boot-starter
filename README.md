@@ -26,26 +26,29 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 ```
 在 Spring Boot2.0 Maven 项目提供坐标地址如下：
 
-> 目前 3.0.4.m3 版本已经支持 Spring Boot2.0，推荐大家使用
 ```xml
 <dependency>
     <groupId>io.github.wayn111</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>2.0.4.m2</version>
+    <version>2.0.4.m3</version>
 </dependency>
 ```
 
 # 使用配置
 **mybatis-xmlreload-spring-boot-starter** 目前只有两个配置属性。
 - `mybatis-xml-reload.enabled` 默认是 false， 也就是不启用 xml 文件的热加载功能，想要开启的话通过在项目配置文件中设置 `mybatis-xml-reload.enabled` 为true。
-- `mybatis-xml-reload.mapper-locations`需要热加载的 xml 文件路径，这个属性需要手动填写，跟项目中的 `mybatis.mapper-locations` 保持一致即可。如果是多数据源配置，这里可以用逗号分割填写多个路径
+- `mybatis-xml-reload.mapper-locations`需要热加载的 xml 文件路径，这个属性需要手动填写，
+跟项目中的 `mybatis.mapper-locations` 保持一致即可。如果是多数据源配置，这里可以用逗号分割填写多个路径。
+也可以直接设置xml文件所在目录的绝对路径，例如 file:/E:/GitRepo/newbeemall-pro/src/main/resources/mapper/*.xml 
+指向的就是项目中xml文件的绝对路径。
+
 ```yml
 # mybatis xml文件热加载配置
 mybatis-xml-reload:
   # 是否开启 xml 热更新，true开启，false不开启，默认为false
   enabled: true
   # xml文件路径，可以填写多个，逗号分隔。如果想将xml文件放在指定目录而不是jar包内，可以用file前缀指定本地目录，例如 file:/c/mapper/*.xml
-  # eg: `classpath:mapper/**/*Mapper.xml,file:/c/mapper/*.xml，`
+  # eg: `classpath:mapper/**/*Mapper.xml,file:/c/mapper/*.xml`
   mapper-locations: classpath:mapper/*Mapper.xml
 ```
 # 学习交流
