@@ -48,7 +48,6 @@ public class MybatisXmlReload {
         String class_path_target_dir = File.separator + "target" + File.separator + "classes";
         String maven_resources_dir = "/src/main/resources";
         String maven_java_dir = "/src/main/java";
-        // Pattern CLASS_PATH_PATTERN = Pattern.compile("(classpath\\*?:)(\\w*)");
 
         List<Resource> mapperLocationsTmp = Stream.of(Optional.of(prop.getMapperLocations()).orElse(new String[0]))
                 .flatMap(location -> Stream.of(getResources(patternResolver, location))).collect(Collectors.toList());
@@ -56,7 +55,7 @@ public class MybatisXmlReload {
         List<Resource> mapperLocations = new ArrayList<>(mapperLocationsTmp.size() * 2);
         Set<Path> locationPatternSet = new HashSet<>();
         for (Resource mapperLocation : mapperLocationsTmp) {
-            mapperLocations.add(mapperLocation);
+            // mapperLocations.add(mapperLocation);
             // 判断xml文件存放位置，只读取文件类型的xml文件，jar里的xml文件不做读取
             if (mapperLocation.isFile()) {
                 mapperLocation.getFile();
@@ -111,13 +110,28 @@ public class MybatisXmlReload {
                                         if (!absolutePath.equals(mapperLocation.getFile().getAbsolutePath())) {
                                             continue;
                                         }
-                                        XPathParser parser = new XPathParser(mapperLocation.getInputStream(), true, targetConfiguration.getVariables(), new XMLMapperEntityResolver());
+                                        XPathParser parser = null;
+                                        try {
+                                            parser = new XPathParser(mapperLocation.getInputStream(), true, targetConfiguration.getVariables(), new XMLMapperEntityResolver());
+                                        } catch (IOException e) {
+                                        }
                                         XNode mapperXnode = parser.evalNode("/mapper");
                                         List<XNode> resultMapNodes = mapperXnode.evalNodes("/mapper/resultMap");
                                         String namespace = mapperXnode.getStringAttribute("namespace");
                                         for (XNode xNode : resultMapNodes) {
                                             String id = xNode.getStringAttribute("id", xNode.getValueBasedIdentifier());
-                                            resultMaps.remove(namespace + "." + id);
+                                            Iterator<Map.Entry<String, ResultMap>> iterator = resultMaps.entrySet().iterator();
+                                            while (iterator.hasNext()) {
+                                                Map.Entry<String, ResultMap> next = iterator.next();
+                                                String key = next.getKey();
+                                                if (key.contains(namespace + "." + id)) {
+                                                    iterator.remove();
+                                                }
+                                                // 处理 association、collection标签
+                                                if (key.contains(namespace + ".mapper_resultMap")) {
+                                                    iterator.remove();
+                                                }
+                                            }
                                         }
 
                                         List<XNode> sqlNodes = mapperXnode.evalNodes("/mapper/sql");
