@@ -1,5 +1,5 @@
 # mybatis-xmlreload-spring-boot-starter
-mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Boot2.0项目请使用 2.0.4.m2 版本。
+mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Boot2.0项目请使用 2.0.4.m3 版本。
 
 | 分支名称                                                                                             | Spring Boot版本 | Mybatis Xmlreload版本 |
 |--------------------------------------------------------------------------------------------------|---------------|---------------------|
