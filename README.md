@@ -3,7 +3,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 
 | 分支名称                                                                                             | Spring Boot版本 | Mybatis Xmlreload版本 |
 |--------------------------------------------------------------------------------------------------|---------------|---------------------|
-| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                         | 3.0.4         |          3.0.3.m3           |
+| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                         | 3.0.4         |          3.0.4.m3           |
 | [springboot2](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter/tree/springboot2) | 2.2.7.RELEASE  |         2.0.4.m2            |
 ---
 # 原理
@@ -21,10 +21,12 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 <dependency>
     <groupId>io.github.wayn111</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.3.m3</version>
+    <version>3.0.4.m3</version>
 </dependency>
 ```
 在 Spring Boot2.0 Maven 项目提供坐标地址如下：
+
+> 目前 3.0.4.m3 版本已经支持 Spring Boot2.0，推荐大家使用
 ```xml
 <dependency>
     <groupId>io.github.wayn111</groupId>
@@ -42,8 +44,8 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 mybatis-xml-reload:
   # 是否开启 xml 热更新，true开启，false不开启，默认为false
   enabled: true
-  # xml文件路径，可以填写多个，逗号分隔。
-  # eg: `classpath:mapper/**/*Mapper.xml,classpath*:other/**/*Mapper.xml`
+  # xml文件路径，可以填写多个，逗号分隔。如果想将xml文件放在指定目录而不是jar包内，可以用file前缀指定本地目录，例如 file:/c/mapper/*.xml
+  # eg: `classpath:mapper/**/*Mapper.xml,file:/c/mapper/*.xml，`
   mapper-locations: classpath:mapper/*Mapper.xml
 ```
 # 学习交流

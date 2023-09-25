@@ -5,7 +5,7 @@
     <packaging>jar</packaging>
     <groupId>io.github.wayn111</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.3.m3</version>
+    <version>3.0.4.m3</version>
     <name>mybatis-xmlreload-spring-boot-starter</name>
     <url>https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter</url>
     <description>mybais springboot项目中xml文件热加载支持</description>
@@ -33,7 +33,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
+        <java.version>8</java.version>
+        <!-- <java.version>17</java.version> -->
         <mybatis-spring-boot-starter.version>3.0.1</mybatis-spring-boot-starter.version>
         <directory-watcher.version>0.18.0</directory-watcher.version>
         <argLine>-Djdk.attach.allowAttachSelf --add-opens java.base/java.lang=ALL-UNNAMED -Dfile.encoding=UTF-8</argLine>
