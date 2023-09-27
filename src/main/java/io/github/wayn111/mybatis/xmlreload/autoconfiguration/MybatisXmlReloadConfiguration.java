@@ -2,8 +2,8 @@ package io.github.wayn111.mybatis.xmlreload.autoconfiguration;
 
 import io.github.wayn111.mybatis.xmlreload.MybatisXmlReload;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,4 +31,8 @@ public class MybatisXmlReloadConfiguration {
         return mybatisXmlReload;
     }
 
+    @Bean
+    public static LazyInitializationExcludeFilter integrationLazyInitializationExcludeFilter() {
+        return LazyInitializationExcludeFilter.forBeanTypes(MybatisXmlReload.class);
+    }
 }

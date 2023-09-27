@@ -3,7 +3,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 
 | 分支名称                                                                                             | Spring Boot版本 | Mybatis Xmlreload版本 |
 |--------------------------------------------------------------------------------------------------|---------------|---------------------|
-| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                         | 3.0.4         | 3.0.4.m3            |
+| [main](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter)                         | 3.0.4         | 3.0.5.m3            |
 | [springboot2](https://github.com/wayn111/mybatis-xmlreload-spring-boot-starter/tree/springboot2) | 2.2.7.RELEASE  | 2.0.4.m3            |
 ---
 # 原理
@@ -21,7 +21,7 @@ mybatis-xmlreload-spring-boot-starter 支持xml文件热更新功能。Spring Bo
 <dependency>
     <groupId>io.github.wayn111</groupId>
     <artifactId>mybatis-xmlreload-spring-boot-starter</artifactId>
-    <version>3.0.4.m3</version>
+    <version>3.0.5.m3</version>
 </dependency>
 ```
 在 Spring Boot2.0 Maven 项目提供坐标地址如下：
