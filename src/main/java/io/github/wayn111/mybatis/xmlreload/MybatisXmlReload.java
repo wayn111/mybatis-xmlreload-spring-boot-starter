@@ -113,7 +113,7 @@ public class MybatisXmlReload {
                                         XPathParser parser = null;
                                         try {
                                             parser = new XPathParser(mapperLocation.getInputStream(), true, targetConfiguration.getVariables(), new XMLMapperEntityResolver());
-                                        } catch (IOException e) {
+                                        } catch (Exception e) {
                                         }
                                         XNode mapperXnode = parser.evalNode("/mapper");
                                         List<XNode> resultMapNodes = mapperXnode.evalNodes("/mapper/resultMap");
