@@ -68,7 +68,9 @@ public class MybatisXmlReload {
                 if (tmpFile.exists()) {
                     locationPatternSet.add(Paths.get(tmpFile.getParent()));
                     FileSystemResource fileSystemResource = new FileSystemResource(tmpFile);
-                    mapperLocations.add(fileSystemResource);
+                    if (!mapperLocations.contains(fileSystemResource)) {
+                        mapperLocations.add(fileSystemResource);
+                    }
                 } else {
                     locationPatternSet.add(Paths.get(mapperLocation.getFile().getParent()));
                 }
