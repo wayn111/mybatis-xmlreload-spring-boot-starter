@@ -99,9 +99,30 @@ public class MybatisXmlReload {
                                     Set<String> loadedResources = (Set<String>) getFieldValue(targetConfiguration, aClass, "loadedResources");
                                     loadedResources.clear();
 
-                                    Map<String, ResultMap> resultMaps = (Map<String, ResultMap>) getFieldValue(targetConfiguration, tClass, "resultMaps");
-                                    Map<String, XNode> sqlFragmentsMaps = (Map<String, XNode>) getFieldValue(targetConfiguration, tClass, "sqlFragments");
-                                    Map<String, MappedStatement> mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, tClass, "mappedStatements");
+                                    //mybatis3.5.6中下面的属性在Configuration类中，直接从Configuration中无法获取
+                                    // 优先从MybatisConfiguration读取配置，若找不到则在父类Configuration中获取
+                                    Map<String, ResultMap> resultMaps = null;
+                                    try{
+                                        resultMaps = (Map<String, ResultMap>) getFieldValue(targetConfiguration, tClass, "resultMaps");
+                                    }catch (NoSuchFieldException ex){
+                                        resultMaps = (Map<String, ResultMap>) getFieldValue(targetConfiguration, aClass, "resultMaps");
+                                    }
+
+                                    Map<String, XNode> sqlFragmentsMaps = null;
+                                    try{
+                                        sqlFragmentsMaps = (Map<String, XNode>)  getFieldValue(targetConfiguration, tClass, "sqlFragments");
+                                    }catch (NoSuchFieldException ex){
+                                        sqlFragmentsMaps = (Map<String, XNode>)  getFieldValue(targetConfiguration, aClass, "sqlFragments");
+                                    }
+
+                                    Map<String, MappedStatement> mappedStatementMaps = null;
+                                    try{
+                                        mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, tClass, "mappedStatements");
+                                    }catch (NoSuchFieldException ex){
+                                        mappedStatementMaps = (Map<String, MappedStatement>) getFieldValue(targetConfiguration, aClass, "mappedStatements");
+                                    }
+
+
 
                                     for (Resource mapperLocation : mapperLocations) {
                                         if (!mapperLocation.isFile()) {
